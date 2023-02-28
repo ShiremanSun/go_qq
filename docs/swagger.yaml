@@ -1,0 +1,63 @@
+info:
+  contact: {}
+paths:
+  /user/createUser:
+    get:
+      parameters:
+      - description: 用户名
+        in: query
+        name: name
+        type: string
+      - description: 密码
+        in: query
+        name: pwd
+        type: string
+      responses:
+        "200":
+          description: code", "message"}
+          schema:
+            type: string
+      tags:
+      - CreateUser
+  /user/deleteUser:
+    get:
+      parameters:
+      - description: 用户ID
+        in: query
+        name: id
+        type: string
+      responses:
+        "200":
+          description: code", "message"}
+          schema:
+            type: string
+      tags:
+      - DeleteUser
+  /user/getUsers:
+    get:
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      tags:
+      - getUsers
+  /user/updateUser:
+    post:
+      parameters:
+      - description: 用户ID
+        in: formData
+        name: id
+        type: string
+      - description: 用户名
+        in: formData
+        name: name
+        type: string
+      responses:
+        "200":
+          description: code", "message"}
+          schema:
+            type: string
+      tags:
+      - UpdateUser
+swagger: "2.0"
