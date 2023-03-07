@@ -16,7 +16,7 @@ const docTemplate = `{
     "basePath": "{{.BasePath}}",
     "paths": {
         "/user/createUser": {
-            "get": {
+            "post": {
                 "tags": [
                     "CreateUser"
                 ],
@@ -25,13 +25,13 @@ const docTemplate = `{
                         "type": "string",
                         "description": "用户名",
                         "name": "name",
-                        "in": "query"
+                        "in": "formData"
                     },
                     {
                         "type": "string",
                         "description": "密码",
                         "name": "pwd",
-                        "in": "query"
+                        "in": "formData"
                     }
                 ],
                 "responses": {
@@ -75,6 +75,35 @@ const docTemplate = `{
                 "responses": {
                     "200": {
                         "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/login": {
+            "post": {
+                "tags": [
+                    "Login"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "用户ID",
+                        "name": "name",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "用户名",
+                        "name": "pwd",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "code\", \"message\"}",
                         "schema": {
                             "type": "string"
                         }

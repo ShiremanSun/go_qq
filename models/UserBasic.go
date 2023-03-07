@@ -53,8 +53,14 @@ func UpdateUser(user *UserBasic) *gorm.DB {
 	return utils.DB.Model(user).Updates(UserBasic{Name: user.Name})
 }
 
-func FindUserByName(name string) (*gorm.DB, *UserBasic) {
+func FindUserByName(name string) *UserBasic {
 	user := &UserBasic{}
-	return utils.DB.Where("name = ?", name).Find(user), user
+	utils.DB.Where("name = ?", name).Find(user)
+	return user
+}
 
+func FindUserByNameAndPWD(name string, pwd string) *UserBasic {
+	user := &UserBasic{}
+	utils.DB.Where("name = ? and pwd = ?", name, pwd).Find(user)
+	return user
 }
