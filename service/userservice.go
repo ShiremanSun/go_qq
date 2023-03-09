@@ -2,8 +2,10 @@ package service
 
 import (
 	"QQ/models"
+	"QQ/utils"
 	"fmt"
 	gin2 "github.com/gin-gonic/gin"
+	"math/rand"
 	"strconv"
 )
 
@@ -12,27 +14,28 @@ import (
 // @Success 200 {string} json
 // @Router /user/getUsers [get]
 func GetUsers(context *gin2.Context) {
-
 	context.JSON(200, gin2.H{"message": models.GetUserList()})
 }
 
 // CreateUser
 // @Tags CreateUser
-// @Param name query string false "用户名"
-// @Param pwd query string false "密码"
+// @Param name formData string false "用户名"
+// @Param pwd formData string false "密码"
 // @Success 200 {string} json{"code", "message"}
-// @Router /user/createUser [get]
+// @Router /user/createUser [post]
 func CreateUser(ct *gin2.Context) {
-	name := ct.Query("name")
-	pwd := ct.Query("pwd")
+	name := ct.PostForm("name")
+	pwd := ct.PostForm("pwd")
 	user := models.UserBasic{
 		Name: name,
-		PWD:  pwd,
 	}
-	user.Salt =
+	// 生成一个随机数
+	user.Salt = fmt.Sprintf("%d", rand.Int())
+	// 生成密码，设置密码
+	user.PWD = utils.MakePWS(pwd, user.Salt)
 	db := models.CreateUser(&user)
 	if db.Error != nil {
-		ct.JSON(-1, gin2.H{
+		ct.JSON(200, gin2.H{
 			"message": "新增用户失败",
 		})
 		return
@@ -57,7 +60,7 @@ func DeleteUser(ct *gin2.Context) {
 	user.ID = uint(id)
 	db := models.DeleteUser(&user)
 	if db.Error != nil {
-		ct.JSON(-1, gin2.H{
+		ct.JSON(200, gin2.H{
 			"message": "删除用户失败",
 		})
 		return
@@ -80,7 +83,7 @@ func UpdateUser(ct *gin2.Context) {
 	user.ID = uint(id)
 	db := models.UpdateUser(&user)
 	if db.Error != nil {
-		ct.JSON(-1, gin2.H{
+		ct.JSON(200, gin2.H{
 			"message": "更新用户失败",
 		})
 		return
@@ -88,5 +91,34 @@ func UpdateUser(ct *gin2.Context) {
 	ct.JSON(200, gin2.H{
 		"message": "更新用户成功",
 	})
+}
+
+// Login
+// @Tags Login
+// @Param name formData string false "用户ID"
+// @Param pwd formData string false "用户名"
+// @Success 200 {string} json{"code", "message"}
+// @Router /user/login [post]
+func Login(ctx *gin2.Context) {
+	userName := ctx.PostForm("name")
+	plainPwd := ctx.PostForm("pwd")
+
+	user := models.FindUserByName(userName)
+	if user.ID == 0 {
+		ctx.JSON(200, gin2.H{
+			"message": "用户名或密码不正确",
+		})
+		return
+	}
+	if !utils.ValidatePwd(plainPwd, user.Salt, user.PWD) {
+		ctx.JSON(200, gin2.H{
+			"message": "用户名或密码不正确",
+		})
+	} else {
+		// todo 返回token
+		ctx.JSON(0, gin2.H{
+			"message": "登录成功",
+		})
+	}
 
 }

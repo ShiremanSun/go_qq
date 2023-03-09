@@ -17,9 +17,11 @@ func Root() *gin2.Engine {
 		service.GetIndex,
 	)
 	r.GET("/user/getUsers", service.GetUsers)
-	r.GET("/user/createUser", service.CreateUser)
+	r.POST("/user/createUser", service.CreateUser)
 	r.GET("/user/deleteUser", service.DeleteUser)
 	r.POST("/user/updateUser", service.UpdateUser)
+	r.POST("/user/login", service.Login)
+	r.POST("/login")
 
 	return r
 }

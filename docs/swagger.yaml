@@ -2,14 +2,14 @@ info:
   contact: {}
 paths:
   /user/createUser:
-    get:
+    post:
       parameters:
       - description: 用户名
-        in: query
+        in: formData
         name: name
         type: string
       - description: 密码
-        in: query
+        in: formData
         name: pwd
         type: string
       responses:
@@ -42,6 +42,24 @@ paths:
             type: string
       tags:
       - getUsers
+  /user/login:
+    post:
+      parameters:
+      - description: 用户ID
+        in: formData
+        name: name
+        type: string
+      - description: 用户名
+        in: formData
+        name: pwd
+        type: string
+      responses:
+        "200":
+          description: code", "message"}
+          schema:
+            type: string
+      tags:
+      - Login
   /user/updateUser:
     post:
       parameters:
