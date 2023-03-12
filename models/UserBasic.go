@@ -24,6 +24,7 @@ type UserBasic struct {
 	IsLogOut      bool
 	DeviceInfo    string
 	Salt          string
+	Token         string
 }
 
 /*
@@ -59,8 +60,12 @@ func FindUserByName(name string) *UserBasic {
 	return user
 }
 
-func FindUserByNameAndPWD(name string, pwd string) *UserBasic {
+func UpdateToken(name string, token string) {
+	utils.DB.Where("name = ?", name).Update("Token", token)
+}
+
+func VerifyToken(token string) *UserBasic {
 	user := &UserBasic{}
-	utils.DB.Where("name = ? and pwd = ?", name, pwd).Find(user)
+	utils.DB.Where("token = ?", token).Find(user)
 	return user
 }

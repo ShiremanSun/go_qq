@@ -1,9 +1,7 @@
 package utils
 
 import (
-	"QQ/models"
 	"fmt"
-	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/spf13/viper"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -14,8 +12,6 @@ import (
 )
 
 var DB *gorm.DB
-
-var AuthMiddleware *jwt.GinJWTMiddleware
 
 func InitConfig() {
 	viper.SetConfigName("app")
@@ -40,24 +36,4 @@ func InitMysql() {
 	if error != nil {
 		panic("连接数据库失败")
 	}
-}
-
-func InitAuth() {
-	authMiddleware, error := jwt.New(&jwt.GinJWTMiddleware{
-		Realm:       "UTC",
-		Key:         []byte(viper.GetString("auth.secret")),
-		Timeout:     time.Hour,
-		MaxRefresh:  time.Hour,
-		IdentityKey: identityKey,
-		PayloadFunc: func(data interface{}) jwt.MapClaims {
-			if v, ok := data.(*models.UserBasic); ok {
-				return jwt.MapClaims{
-					identityKey: v.Name,
-				}
-			}
-			return jwt.MapClaims{}
-		},
-	})
-
-	AuthMiddleware = authMiddleware
 }
