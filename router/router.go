@@ -29,7 +29,7 @@ func Root() *gin2.Engine {
 	auth.Use(service.AuthMiddleware.MiddlewareFunc())
 
 	r.POST("/user/createUser", service.CreateUser)
-
+	r.GET("/user/sendMsg", service.SendMsg)
 	auth.GET("/user/getUsers", service.GetUsers)
 	auth.GET("/user/deleteUser", service.DeleteUser)
 	auth.POST("/user/updateUser", service.UpdateUser)
