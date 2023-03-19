@@ -58,25 +58,3 @@ func InitRedis() {
 		fmt.Print(pong)
 	}
 }
-
-const PublishKey = "websocket"
-
-var RedisSubscriber *redis.PubSub
-
-// PublishMsg 发布消息到redis
-func PublishMsg(ctx context.Context, channel string, msg []byte) error {
-	fmt.Print("publish%s", msg)
-	return Redis.Publish(ctx, channel, msg).Err()
-}
-
-// Subscribe 订阅Redis
-func Subscribe(ctx context.Context, channel string) {
-	RedisSubscriber = Redis.Subscribe(ctx, channel)
-}
-
-// SubscribeMsg 订阅消息
-func SubscribeMsg(ctx context.Context) (string, error) {
-	msg, error := RedisSubscriber.ReceiveMessage(ctx)
-	fmt.Print("Subscribe%s", msg.Payload)
-	return msg.Payload, error
-}

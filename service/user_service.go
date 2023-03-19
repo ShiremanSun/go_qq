@@ -6,7 +6,6 @@ import (
 	"fmt"
 	jwt "github.com/appleboy/gin-jwt/v2"
 	gin2 "github.com/gin-gonic/gin"
-	"github.com/gorilla/websocket"
 	"github.com/spf13/viper"
 	"log"
 	"math/rand"
@@ -197,64 +196,4 @@ func InitAuth() {
 	}
 
 	AuthMiddleware = authMiddleware
-}
-
-// 防止跨域请求
-var upgrader = websocket.Upgrader{
-	CheckOrigin: func(r *http.Request) bool {
-		return true
-	},
-}
-
-// SendMsg 发送消息，会启动一个websocket
-func SendMsg(c *gin2.Context) {
-	ws, err := upgrader.Upgrade(c.Writer, c.Request, nil)
-	if err != nil {
-		fmt.Print(err)
-		return
-	}
-	//close ws
-	defer func(ws *websocket.Conn) {
-		err := ws.Close()
-		if err != nil {
-			fmt.Println(err)
-		}
-	}(ws)
-	// 开始订阅Redis
-	utils.Subscribe(c, utils.PublishKey)
-	//开始读取消息
-	go receiveMsg(ws, c)
-	//开始订阅消息
-	subscribeMsg(ws, c)
-
-}
-func receiveMsg(ws *websocket.Conn, ctx *gin2.Context) {
-	for {
-		// 接收消息
-		_, p, err := ws.ReadMessage()
-		//发布到redis中
-		utils.PublishMsg(ctx, utils.PublishKey, p)
-		if err != nil {
-			fmt.Println(err)
-		}
-	}
-}
-
-func subscribeMsg(ws *websocket.Conn, ctx *gin2.Context) {
-	// for循环不好，应该增加断开的逻辑，如果客户长期断开连接，可以尝试退出for循环
-	for {
-		msg, err := utils.SubscribeMsg(ctx)
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
-		fmt.Println(msg)
-		tm := time.Now()
-		m := fmt.Sprintf("[ws][%s]:%s", tm, msg)
-		//回复消息
-		err = ws.WriteMessage(1, []byte(m))
-		if err != nil {
-			fmt.Println(err)
-		}
-	}
 }
